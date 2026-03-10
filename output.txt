@@ -1,0 +1,117 @@
+=======================================================
+  MEDICAL INSURANCE COST ANALYSIS
+  'Who Pays the Price?'
+=======================================================
+
+ Dataset Shape   : 1338 rows × 7 columns
+ Missing Values  : 0
+ Duplicates      : 1
+
+── Sample Data ──
+   age     sex     bmi  children smoker     region      charges
+0   19  female  27.900         0    yes  southwest  16884.92400
+1   18    male  33.770         1     no  southeast   1725.55230
+2   28    male  33.000         3     no  southeast   4449.46200
+3   33    male  22.705         0     no  northwest  21984.47061
+4   32    male  28.880         0     no  northwest   3866.85520
+
+── Data Types ──
+age           int64
+sex          object
+bmi         float64
+children      int64
+smoker       object
+region       object
+charges     float64
+dtype: object
+
+── Statistical Summary ──
+               age          bmi     children       charges
+count  1338.000000  1338.000000  1338.000000   1338.000000
+mean     39.207025    30.663397     1.094918  13270.422265
+std      14.049960     6.098187     1.205493  12110.011237
+min      18.000000    15.960000     0.000000   1121.873900
+25%      27.000000    26.296250     0.000000   4740.287150
+50%      39.000000    30.400000     1.000000   9382.033000
+75%      51.000000    34.693750     2.000000  16639.912515
+max      64.000000    53.130000     5.000000  63770.428010
+
+── Encoded Feature Columns ──
+['age', 'sex', 'bmi', 'children', 'smoker', 'charges', 'region_northwest', 'region_southeast', 'region_southwest']
+
+── After Scaling (first 3 rows) ──
+        age       sex       bmi  children    smoker  region_northwest  region_southeast  region_southwest
+0 -1.440418 -1.009771 -0.453160 -0.909234  1.969660         -0.565546         -0.611638          1.764609
+1 -1.511647  0.990324  0.509422 -0.079442 -0.507702         -0.565546          1.634955         -0.566698
+2 -0.799350  0.990324  0.383155  1.580143 -0.507702         -0.565546          1.634955         -0.566698
+
+Insight 1: Charges are right-skewed with two distinct clusters —
+   a low-cost majority and a high-cost minority. This suggests
+   a specific subgroup is driving up average costs significantly.
+
+Insight 2: Smokers cost $32,050 on average vs $8,441 for non-smokers.
+   That's 3.8x MORE — smoking is the single biggest cost driver.
+   Industry implication: Insurers heavily penalize smokers — and the data justifies it.
+
+Insight 3: Three distinct charge bands emerge by age — driven entirely by smoking status.
+   Non-smokers show a gentle rise with age. Smokers show a steep, high-cost band.
+   BMI above 30 (obese) combined with smoking creates the most expensive profiles.
+
+Insight 4: Gender has minimal impact on charges — a surprisingly fair outcome.
+   Region shows slight variation but nothing dramatic.
+   This tells insurers: geography and gender are weak pricing levers.
+
+Insight 5: Smoker status has the highest correlation with charges (0.79).
+   Age (0.30) and BMI (0.20) follow. Children, sex, region are weak predictors.
+
+=======================================================
+  MODEL: LINEAR REGRESSION
+=======================================================
+
+  R² Score  : 0.8069  (80.7% variance explained)
+  MAE       : $4,177.05
+  RMSE      : $5,956.34
+
+── Top Drivers of Insurance Cost ──
+         Feature  Coefficient
+          smoker  9315.458714
+             age  3484.650051
+             bmi  1943.500851
+        children   642.341261
+             sex   -50.768627
+region_northwest  -167.867848
+region_southwest  -282.733997
+region_southeast  -373.418692
+
+=======================================================
+  FINAL INDUSTRY INSIGHTS
+=======================================================
+
+1. SMOKING IS THE #1 COST DRIVER
+   Smokers pay 3.8x more than non-smokers on average.
+   Avg smoker charge: $32,050 vs $8,441 for non-smokers.
+   → Insurers should invest heavily in smoking cessation programs
+     to reduce the highest-cost claims.
+
+2. AGE COMPOUNDS COSTS — BUT ONLY FOR SMOKERS
+   Non-smokers show a gentle, manageable cost increase with age.
+   Smokers show a steep, accelerating cost curve.
+   → Age-based pricing alone is insufficient — smoking × age
+     interaction is the real risk multiplier.
+
+3. OBESITY (BMI > 30) + SMOKING = HIGHEST RISK PROFILE
+   The most expensive patients are smokers with high BMI.
+   → Wellness programs targeting this combined profile
+     could yield the biggest cost savings for insurers.
+
+4. GENDER & REGION ARE WEAK PRICING FACTORS
+   Minimal difference in charges by sex or region.
+   → These should not be primary underwriting criteria.
+     Risk-based pricing should focus on smoking + BMI + age.
+
+5. MODEL EXPLAINS 80.7% OF COST VARIANCE
+   Linear regression captures the broad patterns well.
+   Residuals suggest non-linear interactions exist
+   (e.g. smoking × BMI synergy).
+   → A more advanced model (Random Forest, XGBoost) could
+     push accuracy further for production use.
